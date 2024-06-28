@@ -19,6 +19,7 @@ class FlushbarRoute<T> extends OverlayRoute<T> {
   Timer? _timer;
   T? _result;
   FlushbarStatus? currentStatus;
+  bool _disposed = false;
 
   FlushbarRoute({
     required this.flushbar,
@@ -199,8 +200,7 @@ class FlushbarRoute<T> extends OverlayRoute<T> {
   }
 
   @override
-  bool get finishedWhenPopped =>
-      _controller!.status == AnimationStatus.dismissed;
+  bool get finishedWhenPopped => _controller!.status == AnimationStatus.dismissed && !_disposed;
 
   /// The animation that drives the route's transition and the previous route's
   /// forward transition.
@@ -303,6 +303,7 @@ class FlushbarRoute<T> extends OverlayRoute<T> {
         _onStatusChanged!(currentStatus!);
 
         if (!isCurrent) {
+          _disposed = true;
           navigator!.finalizeRoute(this);
           overlayEntries.clear();
           assert(overlayEntries.isEmpty);
